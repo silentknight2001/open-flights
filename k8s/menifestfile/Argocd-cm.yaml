@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
 data:
   repositories: |
-    - url: git@github.com:silentknight2001/-open-flights-devops.git
+    - url: git@github.com:silentknight2001/open-flights.git
       sshPrivateKeySecret:
         name: git-credentials
         key: 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

@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'git@github.com:silentknight2001/-open-flights-devops.git'
+    repoURL: 'git@github.com:silentknight2001/open-flights.git'
     targetRevision: HEAD
     path: manifests
   destination:
