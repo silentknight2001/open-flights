@@ -81,7 +81,9 @@ module.exports = function(api) {
         {
           removeImport: true
         }
-      ]
+      ],
+      // Add the new plugin here
+      '@babel/plugin-transform-for-of'
     ].filter(Boolean)
   }
 }

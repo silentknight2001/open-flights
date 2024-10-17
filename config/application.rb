@@ -18,14 +18,8 @@ Bundler.require(*Rails.groups)
 
 module OpenFlights
   class Application < Rails::Application
-    # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.1
-
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration should go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded.
-    config.middleware.use ActionDispatch::Cookies
-    # Don't generate system test files.
-    config.generators.system_tests = nil
+      # Skip ActiveRecord initialization if you don't need a database
+      config.api_only = true
+      config.generators.orm :null
   end
 end

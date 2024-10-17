@@ -1,0 +1,22 @@
+# Ignore the following directories
+log/
+tmp/
+public/assets/
+node_modules/
+vendor/bundle/
+db/*.dump
+*.swp
+*.swo
+.DS_Store
+
+# Ignore Git files
+.git
+.gitignore
+# Ignore local files
+*.log
+*.tmp
+*.DS_Store
+node_modules
+coverage
+test
+spec
