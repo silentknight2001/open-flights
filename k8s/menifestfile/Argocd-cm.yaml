@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  repositories: |
+    - url: git@github.com:silentknight2001/-open-flights-devops.git
+      sshPrivateKeySecret:
+        name: git-credentials
+        key: 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
