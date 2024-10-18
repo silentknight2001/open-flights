@@ -1,0 +1,126 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-docker-image
+spec:
+  params:
+  - name: git-url
+    type: string
+  - name: git-revision
+    type: string
+  - name: image
+    type: string
+  steps:
+  - name: prepare
+    image: alpine/git
+    script: |
+      git clone $(params.git-url) /workspace/source
+      cd /workspace/source
+      git checkout $(params.git-revision)
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+  - name: place-scripts
+    image: docker
+    script: |
+      docker build -t $(params.image) /workspace/source
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+---
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: push-docker-image
+spec:
+  params:
+  - name: image
+    type: string
+  steps:
+  - name: push-image
+    image: docker
+    script: |
+      echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      docker push $(params.image)
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+  workspaces:
+  - name: dockerhub-credentials
+
+---
+
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-push-pipeline
+spec:
+  params:
+  - name: git-url
+    type: string
+  - name: git-revision
+    type: string
+  - name: image
+    type: string
+  workspaces:
+  - name: dockerhub-credentials
+  tasks:
+  - name: build-image
+    taskRef:
+      name: build-docker-image
+    params:
+    - name: git-url
+      value: $(params.git-url)
+    - name: git-revision
+      value: $(params.git-revision)
+    - name: image
+      value: $(params.image)
+  - name: push-image
+    runAfter:
+    - build-image
+    taskRef:
+      name: push-docker-image
+    params:
+    - name: image
+      value: $(params.image)
+    workspaces:
+    - name: dockerhub-credentials
+      workspace: dockerhub-credentials
+
+---
+
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-and-push-pipeline-run
+spec:
+  pipelineRef:
+    name: build-and-push-pipeline
+  params:
+  - name: git-url
+    value: https://github.com/silentknight2001/open-flights.git
+  - name: git-revision
+    value: main
+  - name: image
+    value: nayan2001/rails-app:latest
+  workspaces:
+  - name: dockerhub-credentials
+    secret:
+      secretName: dockerhub-secret

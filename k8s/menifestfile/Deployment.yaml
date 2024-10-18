@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rails-app
+  namespace: default # or argocd depending on your choice
 spec:
   replicas: 1
   selector:
@@ -12,18 +13,25 @@ spec:
       labels:
         app: rails-app
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: rails-app
         image: nayan2001/rails-app:latest
         ports:
         - containerPort: 3000
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
         env:
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
               name: postgres-secret
               key: POSTGRES_USER
-        env:
         - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:

@@ -2,18 +2,19 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: rail-ruby-app
+  namespace: default # or argocd depending on your choice
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: rail-ruby-app-app.local
+  - host: rail-ruby-app.local # make sure this matches your DNS setup
     http:
       paths:
       - path: /register
         pathType: Prefix
         backend:
           service:
-            name: rail-ruby-app
+            name: rails-app-service
             port:
               number: 80
