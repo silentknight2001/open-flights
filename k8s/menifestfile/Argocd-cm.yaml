@@ -8,4 +8,4 @@ data:
     - url: git@github.com:silentknight2001/open-flights.git
       sshPrivateKeySecret:
         name: git-credentials
-        key: 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
+        key: ghp_45N5516xztns0SEtGYA9IjfLdtfX155rWnVT
